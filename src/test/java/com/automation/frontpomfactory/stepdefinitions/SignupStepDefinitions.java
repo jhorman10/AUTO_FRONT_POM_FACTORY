@@ -1,6 +1,6 @@
 package com.automation.frontpomfactory.stepdefinitions;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import com.automation.frontpomfactory.pages.SignupPage;
 
@@ -40,21 +40,21 @@ public class SignupStepDefinitions {
 
     @Then("recibe confirmación de registro exitoso")
     public void recibeConfirmacionDeRegistroExitoso() {
-        Assert.assertTrue("El usuario no fue redirigido a signin", signupPage.isSigninPage());
+        Assertions.assertTrue(signupPage.isSigninPage(), "El usuario no fue redirigido a signin");
     }
 
     @And("el mensaje de éxito es visible en la pantalla")
     public void elMensajeDeExitoEsVisibleEnLaPantalla() {
-        Assert.assertTrue("No se encontró mensaje de éxito", signupPage.isSuccessMessageDisplayed() || signupPage.isSigninPage());
+        Assertions.assertTrue(signupPage.isSuccessMessageDisplayed() || signupPage.isSigninPage(), "No se encontró mensaje de éxito");
     }
 
     @Then("recibe un mensaje de error indicando que la contraseña es débil")
     public void recibeUnMensajeDeErrorIndicandoQueIntroduzcaContraseña() {
-        Assert.assertTrue("No se encontró mensaje de error de contraseña débil", signupPage.isErrorMessageDisplayed() || signupPage.isSignupPage());
+        Assertions.assertTrue(signupPage.isErrorMessageDisplayed() || signupPage.isSignupPage(), "No se encontró mensaje de error de contraseña débil");
     }
 
     @And("el usuario permanece en la página de signup")
     public void elUsuarioPermanecenEnLaPaginaDeSignup() {
-        Assert.assertTrue("El usuario no está en la página de signup", signupPage.isSignupPage());
+        Assertions.assertTrue(signupPage.isSignupPage(), "El usuario no está en la página de signup");
     }
 }
