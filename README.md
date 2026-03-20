@@ -91,6 +91,12 @@ Debe devolver HTTP 200.
 ./gradlew clean test --no-daemon
 ```
 
+6.1. Ejecuta tests y genera el reporte de Serenity con un solo comando:
+
+```bash
+./gradlew serenityReport --no-daemon
+```
+
 7. (Opcional) Ejecuta solo tags concretos:
 
 ```bash
@@ -99,13 +105,29 @@ Debe devolver HTTP 200.
 ./gradlew clean test --no-daemon -Dcucumber.filter.tags="@negative"
 ```
 
-8. Abre reporte de Serenity:
+8. Abre reporte de los tests (Gradle):
+
+```bash
+xdg-open build/reports/tests/test/index.html  # Linux
+open build/reports/tests/test/index.html      # macOS
+start build/reports/tests/test/index.html     # Windows
+```
+
+9. Abre reporte de Serenity:
 
 ```bash
 xdg-open target/site/serenity/index.html  # Linux
 open target/site/serenity/index.html      # macOS
 start target/site/serenity/index.html     # Windows
 ```
+
+9.1. También puedes generar y abrir el reporte con una sola tarea:
+
+```bash
+./gradlew openSerenityReport --no-daemon
+```
+
+También puedes generarlo directamente con el task `serenityReport`, que ejecuta la suite y deja publicado el HTML en `target/site/serenity/index.html`.
 
 ## Estructura con detalle
 

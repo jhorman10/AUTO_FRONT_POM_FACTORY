@@ -3,30 +3,29 @@ package com.automation.frontpomfactory.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import com.automation.frontpomfactory.utils.AutomationConstants;
+
 import net.serenitybdd.core.annotations.findby.FindBy;
 
 public class SignupPage extends BasePage {
 
-    @FindBy(css = "input[placeholder='Nombre']")
+    @FindBy(css = AutomationConstants.FULL_NAME_INPUT)
     private WebElement fullNameField;
 
-    @FindBy(css = "input[placeholder='Email']")
+    @FindBy(css = AutomationConstants.EMAIL_INPUT)
     private WebElement emailField;
 
-    @FindBy(css = "input[placeholder='Contraseña']")
+    @FindBy(css = AutomationConstants.PASSWORD_INPUT)
     private WebElement passwordField;
 
-    @FindBy(css = "button[type='submit']")
+    @FindBy(css = AutomationConstants.REGISTER_BUTTON)
     private WebElement registerButton;
 
-    @FindBy(css = ".SignUpForm-module__NmlLka__input")
-    private WebElement anyInputField;
-
-    @FindBy(css = ".SignUpForm-module__NmlLka__button")
+    @FindBy(css = AutomationConstants.FALLBACK_SUBMIT_BUTTON)
     private WebElement submitButton;
 
     public void navigateToSignup() {
-        openUrl("http://localhost:3001/signup");
+        openUrl(AutomationConstants.SIGNUP_URL);
     }
 
     public void enterFullName(String fullName) {
@@ -53,31 +52,31 @@ public class SignupPage extends BasePage {
     }
 
     public boolean isSuccessMessageDisplayed() {
-        return !getDriver().findElements(By.cssSelector(".success-message, .alert-success")).isEmpty();
+        return !getDriver().findElements(By.cssSelector(AutomationConstants.SUCCESS_MESSAGE)).isEmpty();
     }
 
     public String getSuccessMessage() {
-        return getDriver().findElements(By.cssSelector(".success-message, .alert-success")).stream()
+        return getDriver().findElements(By.cssSelector(AutomationConstants.SUCCESS_MESSAGE)).stream()
                 .findFirst().map(WebElement::getText).orElse("");
     }
 
     public boolean isErrorMessageDisplayed() {
-        return !getDriver().findElements(By.cssSelector(".error-message, .alert-danger, .error")).isEmpty();
+        return !getDriver().findElements(By.cssSelector(AutomationConstants.ERROR_MESSAGE)).isEmpty();
     }
 
     public String getErrorMessage() {
-        return getDriver().findElements(By.cssSelector(".error-message, .alert-danger, .error")).stream()
+        return getDriver().findElements(By.cssSelector(AutomationConstants.ERROR_MESSAGE)).stream()
                 .findFirst().map(WebElement::getText).orElse("");
     }
 
     public boolean isSigninPage() {
-        return getDriver().getCurrentUrl().contains("/signin")
-                || !getDriver().findElements(By.linkText("Iniciar sesión")).isEmpty();
+        return getDriver().getCurrentUrl().contains(AutomationConstants.SIGNIN_PATH)
+                || !getDriver().findElements(By.linkText(AutomationConstants.SIGNIN_LINK_TEXT)).isEmpty();
     }
 
     public boolean isSignupPage() {
-        return getDriver().getCurrentUrl().contains("/signup")
-                && !getDriver().findElements(By.cssSelector("input[placeholder='Nombre']")).isEmpty();
+        return getDriver().getCurrentUrl().contains(AutomationConstants.SIGNUP_PATH)
+                && !getDriver().findElements(By.cssSelector(AutomationConstants.FULL_NAME_INPUT)).isEmpty();
     }
 
     public void fillSignupForm(String fullName, String email, String password) {

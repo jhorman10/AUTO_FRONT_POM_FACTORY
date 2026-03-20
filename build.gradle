@@ -1,3 +1,5 @@
+import java.util.Locale
+
 plugins {
     id 'java'
     id 'idea'
@@ -47,6 +49,39 @@ tasks.withType(Test).configureEach {
 test {
     useJUnitPlatform()
     finalizedBy aggregate
+}
+
+tasks.register('serenityReport') {
+    group = 'reporting'
+    description = 'Runs the UI tests and generates the Serenity HTML report.'
+    dependsOn clean, test
+
+    doLast {
+        def reportFile = file('target/site/serenity/index.html')
+        println "Serenity report available at ${reportFile.absolutePath}"
+    }
+}
+
+tasks.register('openSerenityReport') {
+    group = 'reporting'
+    description = 'Generates and opens the Serenity HTML report in the default browser.'
+    dependsOn serenityReport
+
+    doLast {
+        def reportFile = file('target/site/serenity/index.html')
+        if (!reportFile.exists()) {
+            throw new GradleException("Serenity report not found at ${reportFile.absolutePath}")
+        }
+
+        def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+        if (osName.contains('mac')) {
+            exec { commandLine 'open', reportFile.absolutePath }
+        } else if (osName.contains('win')) {
+            exec { commandLine 'cmd', '/c', 'start', '', reportFile.absolutePath }
+        } else {
+            exec { commandLine 'xdg-open', reportFile.absolutePath }
+        }
+    }
 }
 
 serenity {

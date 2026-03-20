@@ -1,5 +1,7 @@
 package com.automation.frontpomfactory.stepdefinitions;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.Assertions;
 
 import com.automation.frontpomfactory.pages.SignupPage;
@@ -13,8 +15,26 @@ public class SignupStepDefinitions {
 
     private SignupPage signupPage;
 
+    private static final String ALREADY_REGISTERED_KEYWORD = "registrad";
+
     @Given("el usuario accede a la página de signup")
     public void elUsuarioAccedeAlaPaginaDeSignup() {
+        signupPage.navigateToSignup();
+    }
+
+    @Given("existe un usuario registrado con nombre {string}, email {string} y contraseña {string}")
+    public void existeUnUsuarioRegistradoConNombreEmailYContrasena(String fullName, String email, String password) {
+        signupPage.navigateToSignup();
+        signupPage.fillSignupForm(fullName, email, password);
+        signupPage.submitSignupForm();
+
+        boolean userCreated = signupPage.isSigninPage();
+        boolean userAlreadyExisted = signupPage.isErrorMessageDisplayed()
+                && signupPage.getErrorMessage().toLowerCase(Locale.ROOT).contains(ALREADY_REGISTERED_KEYWORD);
+
+        Assertions.assertTrue(userCreated || userAlreadyExisted,
+                "No se pudo establecer la precondición de usuario ya registrado");
+
         signupPage.navigateToSignup();
     }
 
@@ -51,6 +71,15 @@ public class SignupStepDefinitions {
     @Then("recibe un mensaje de error indicando que la contraseña es débil")
     public void recibeUnMensajeDeErrorIndicandoQueIntroduzcaContraseña() {
         Assertions.assertTrue(signupPage.isErrorMessageDisplayed() || signupPage.isSignupPage(), "No se encontró mensaje de error de contraseña débil");
+    }
+
+    @Then("recibe un mensaje indicando que el usuario ya está registrado")
+    public void recibeUnMensajeIndicandoQueElUsuarioYaEstaRegistrado() {
+        String errorMessage = signupPage.getErrorMessage().toLowerCase(Locale.ROOT);
+
+        Assertions.assertTrue(signupPage.isErrorMessageDisplayed(), "No se mostró mensaje de usuario ya registrado");
+        Assertions.assertTrue(errorMessage.contains(ALREADY_REGISTERED_KEYWORD),
+                "El mensaje no indica que el usuario ya esté registrado. Mensaje recibido: " + errorMessage);
     }
 
     @And("el usuario permanece en la página de signup")
