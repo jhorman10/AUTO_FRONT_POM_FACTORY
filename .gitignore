@@ -1,0 +1,15 @@
+.gradle/
+build/
+bin/
+out/
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.DS_Store
+target/
+serenity.properties
+reports/
