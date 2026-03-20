@@ -39,51 +39,97 @@ Proyecto base del flujo 1 del taller de la semana 5. Este repositorio automatiza
 
 ## Prerrequisitos
 
-- Java 21 instalado y disponible en `PATH`
-- Google Chrome instalado
-- Acceso a la aplicación web objetivo
+- Java 21 instalado y disponible en `PATH`.
+- Gradle (se usa wrapper incluido: `./gradlew`).
+- Google Chrome instalado (u otro navegador compatible con Serenity mediante `serenity.conf`).
+- La aplicación bajo prueba debe estar corriendo en `http://localhost:3001` (o la URL que definas).
+- Red local sin bloqueo de puertos para `localhost:3001`.
 
-## Configuración inicial
+## Instalación y puesta en marcha (de forma exacta)
 
-Antes de automatizar los escenarios reales debes definir:
-
-1. La URL base de la aplicación en `serenity.conf` o por propiedad de sistema.
-2. Los dos escenarios funcionales del taller.
-3. Los datos de prueba requeridos.
-4. Las credenciales si el flujo necesita autenticación.
-
-La configuración actual usa `http://localhost:3001` como valor base para `webdriver.base.url`.
-
-## Comandos de ejecución
-
-Ejecutar la suite base:
+1. Clona el repositorio:
 
 ```bash
-./gradlew clean test aggregate
+git clone <tu-url-del-repositorio> AUTO_FRONT_POM_FACTORY
+cd AUTO_FRONT_POM_FACTORY
 ```
 
-Sobrescribir la URL base en ejecución:
+2. Verifica Java y Gradle wrapper:
 
 ```bash
-./gradlew clean test aggregate -Dwebdriver.base.url="https://tu-aplicacion"
+java -version
+./gradlew -v
 ```
 
-Ejecutar solo el escenario de bootstrap:
+3. Instala dependencias y compila:
 
 ```bash
-./gradlew clean test -Dcucumber.filter.tags="@bootstrap"
+./gradlew clean compileJava compileTestJava
 ```
 
-## Reportes
+4. Abre `serenity.conf` y confirma/ajusta la URL base:
 
-Después de ejecutar las pruebas, Serenity genera el reporte en:
-
-```text
-target/site/serenity/index.html
+```properties
+webdriver {
+  base.url = "http://localhost:3001"
+  driver = chrome
+  autodownload = true
+}
 ```
+
+5. Asegúrate de que la app web esté activa:
+
+```bash
+curl -I http://localhost:3001/signup
+```
+
+Debe devolver HTTP 200.
+
+6. Ejecuta todos los tests:
+
+```bash
+./gradlew clean test --no-daemon
+```
+
+7. (Opcional) Ejecuta solo tags concretos:
+
+```bash
+./gradlew clean test --no-daemon -Dcucumber.filter.tags="@signup"
+./gradlew clean test --no-daemon -Dcucumber.filter.tags="@positive"
+./gradlew clean test --no-daemon -Dcucumber.filter.tags="@negative"
+```
+
+8. Abre reporte de Serenity:
+
+```bash
+xdg-open target/site/serenity/index.html  # Linux
+open target/site/serenity/index.html      # macOS
+start target/site/serenity/index.html     # Windows
+```
+
+## Estructura con detalle
+
+- `src/main/java/com/automation/frontpomfactory/pages/SignupPage.java`: Page Object con `@FindBy`
+- `src/test/java/com/automation/frontpomfactory/stepdefinitions/SignupStepDefinitions.java`: step definitions
+- `src/test/resources/features/signup-successful.feature`: escenario positivo
+- `src/test/resources/features/signup-weak-password.feature`: escenario negativo
+- `src/test/java/com/automation/frontpomfactory/runners/CucumberTestSuite.java`: runner Cucumber+Serenity
+
+## Verificación de carga de URL y selectores
+
+1. Verifica que el HTML de signup contiene:
+   - `input[placeholder='Nombre']`
+   - `input[placeholder='Email']`
+   - `input[placeholder='Contraseña']`
+   - `button[type='submit']`
+
+2. Si la aplicación cambia la UI, actualiza `SignupPage` preservando `@FindBy`.
+
+3. Asegura que ambos escenarios sean independientes y no compartan estado.
 
 ## Estado actual
 
-- La base técnica del proyecto ya está creada.
-- La spec aprobada del flujo 1 está en `.github/specs/front-pom-page-factory.spec.md`.
-- Falta parametrizar la aplicación objetivo y desarrollar los dos escenarios funcionales reales del taller.
+- La base técnica ya está creada.
+- El proyecto implementa patrón POM + Page Factory.
+- Tiene 2 escenarios independientes (positivo y negativo) para la URL `http://localhost:3001/signup`.
+- Reportes de Serenity generables en `target/site/serenity/index.html`.
