@@ -1,7 +1,12 @@
 package com.automation.frontpomfactory.pages;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.automation.frontpomfactory.utils.AutomationConstants;
 
@@ -61,12 +66,28 @@ public class SignupPage extends BasePage {
     }
 
     public boolean isErrorMessageDisplayed() {
-        return !getDriver().findElements(By.cssSelector(AutomationConstants.ERROR_MESSAGE)).isEmpty();
+        return !findErrorElements().isEmpty();
+    }
+
+    public boolean waitForErrorMessage() {
+        try {
+            new WebDriverWait(getDriver(), Duration.ofSeconds(AutomationConstants.WAIT_FOR_MESSAGE_SECONDS))
+                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(AutomationConstants.ERROR_MESSAGE)));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String getErrorMessage() {
-        return getDriver().findElements(By.cssSelector(AutomationConstants.ERROR_MESSAGE)).stream()
-                .findFirst().map(WebElement::getText).orElse("");
+        return findErrorElements().stream()
+                .map(WebElement::getText)
+                .filter(text -> !text.isBlank())
+                .findFirst().orElse("");
+    }
+
+    private List<WebElement> findErrorElements() {
+        return getDriver().findElements(By.cssSelector(AutomationConstants.ERROR_MESSAGE));
     }
 
     public boolean isSigninPage() {

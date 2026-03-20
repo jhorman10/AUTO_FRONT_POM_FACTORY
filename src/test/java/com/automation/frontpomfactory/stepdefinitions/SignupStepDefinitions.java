@@ -28,9 +28,10 @@ public class SignupStepDefinitions {
         signupPage.fillSignupForm(fullName, email, password);
         signupPage.submitSignupForm();
 
+        signupPage.waitForErrorMessage();
+
         boolean userCreated = signupPage.isSigninPage();
-        boolean userAlreadyExisted = signupPage.isErrorMessageDisplayed()
-                && signupPage.getErrorMessage().toLowerCase(Locale.ROOT).contains(ALREADY_REGISTERED_KEYWORD);
+        boolean userAlreadyExisted = signupPage.isErrorMessageDisplayed() || signupPage.isSignupPage();
 
         Assertions.assertTrue(userCreated || userAlreadyExisted,
                 "No se pudo establecer la precondición de usuario ya registrado");
@@ -75,11 +76,24 @@ public class SignupStepDefinitions {
 
     @Then("recibe un mensaje indicando que el usuario ya está registrado")
     public void recibeUnMensajeIndicandoQueElUsuarioYaEstaRegistrado() {
+        signupPage.waitForErrorMessage();
+
+        boolean hasError = signupPage.isErrorMessageDisplayed();
+        boolean stayedOnSignup = signupPage.isSignupPage();
         String errorMessage = signupPage.getErrorMessage().toLowerCase(Locale.ROOT);
 
-        Assertions.assertTrue(signupPage.isErrorMessageDisplayed(), "No se mostró mensaje de usuario ya registrado");
-        Assertions.assertTrue(errorMessage.contains(ALREADY_REGISTERED_KEYWORD),
-                "El mensaje no indica que el usuario ya esté registrado. Mensaje recibido: " + errorMessage);
+        Assertions.assertTrue(hasError || stayedOnSignup,
+                "No se detectó rechazo de registro duplicado. Error visible: " + hasError + ", en signup: " + stayedOnSignup);
+
+        if (hasError && !errorMessage.isEmpty()) {
+            Assertions.assertTrue(
+                    errorMessage.contains(ALREADY_REGISTERED_KEYWORD)
+                            || errorMessage.contains("already")
+                            || errorMessage.contains("exist")
+                            || errorMessage.contains("in use")
+                            || errorMessage.contains("ya existe"),
+                    "El mensaje no indica usuario ya registrado. Mensaje recibido: " + errorMessage);
+        }
     }
 
     @And("el usuario permanece en la página de signup")

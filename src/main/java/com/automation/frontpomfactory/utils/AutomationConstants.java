@@ -20,8 +20,9 @@ public final class AutomationConstants {
     public static final String REGISTER_BUTTON = "button[type='submit']";
     public static final String FALLBACK_SUBMIT_BUTTON = ".SignUpForm-module__NmlLka__button";
     public static final String SUCCESS_MESSAGE = ".success-message, .alert-success";
-    public static final String ERROR_MESSAGE = ".error-message, .alert-danger, .error";
+    public static final String ERROR_MESSAGE = ".error-message, .alert-danger, .error, [role='alert'], .toast-error, .Toastify__toast--error, .notification-error";
     public static final String SIGNIN_LINK_TEXT = "Iniciar sesión";
+    public static final int WAIT_FOR_MESSAGE_SECONDS = 5;
 
     // Reporting
     public static final String SERENITY_REPORT_DIRECTORY = "target/site/serenity";
