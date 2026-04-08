@@ -14,7 +14,9 @@ repositories {
 }
 
 configurations.configureEach {
-    exclude group: 'junit', module: 'junit'
+    // junit:junit (JUnit 4 API) must remain on the classpath so that
+    // SerenityReporterParallel can load org.junit.runners.ParentRunner.
+    // Only the vintage engine is excluded to prevent JUnit 4 test discovery.
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 }
 
@@ -32,6 +34,7 @@ dependencies {
     testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
     testImplementation "org.assertj:assertj-core:${assertjVersion}"
     testRuntimeOnly "org.slf4j:slf4j-simple:${slf4jVersion}"
+    testRuntimeOnly 'junit:junit:4.13.2'
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -40,6 +43,13 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.withType(Test).configureEach {
     systemProperty 'file.encoding', 'UTF-8'
+
+    // Forward cucumber system properties from CLI (-Dcucumber.filter.tags=...)
+    System.properties.each { key, value ->
+        if (key.toString().startsWith('cucumber.')) {
+            systemProperty key.toString(), value.toString()
+        }
+    }
 
     testLogging {
         events 'PASSED', 'SKIPPED', 'FAILED'
